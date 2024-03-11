@@ -1,34 +1,24 @@
-// const app = require("./app");
+const { MongoClient } = require('mongodb');
 
-// const port = 3000;
+const uri = 'mongodb+srv://hennakausarformal:Henna%40atlas09@cluster0.inydhlk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
-// const server = app.listen(port, () => {
-//   console.log("App running on 3000");
-// });
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-// server.js
+async function connectToDatabase() {
+    try {
+        await client.connect();
+        console.log("Connected to MongoDB Atlas");
 
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+        const database = client.db('<database-name>'); 
+        const collection = database.collection('<collection-name>'); 
+        const cursor = collection.find({});
+        await cursor.forEach(console.log);
 
-const app = express();
+    } catch (error) {
+        console.error("Error connecting to MongoDB Atlas", error);
+    } finally {
+        await client.close();
+    }
+}
 
-// Middleware
-app.use(bodyParser.json());
-
-// MongoDB Atlas connection
-mongoose.connect('mongodb+srv://hennakausarformal:Henna%40atlas09@cluster0.inydhlk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-.then(() => console.log('MongoDB Connected'))
-.catch(err => console.log(err));
-
-// User Model
-const User = require('./models/User');
-
-// Routes
-// const authRoutes = require('./routes/auth');
-// app.use('/api/auth', authRoutes);
-
-// Start server
-const port = process.env.PORT || 5000;
-app.listen(port, () => console.log(`Server running on port ${port}`));
+connectToDatabase().catch(console.error);
