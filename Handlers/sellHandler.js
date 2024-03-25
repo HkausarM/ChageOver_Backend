@@ -19,5 +19,13 @@ const sellProduct = async (req, res) => {
       });
 };
 
+const sellOrdervaluationList = async (req, res) => {
+  console.log("inside middleware")
 
-module.exports = {sellProduct}
+  let sellOrderArr = await database.collection("sellorders").find().toArray()
+  console.log("SellOrderList:", sellOrderArr);
+  res.send(JSON.stringify({ evaluationList: sellOrderArr}))
+};
+
+
+module.exports = {sellProduct, sellOrdervaluationList}
