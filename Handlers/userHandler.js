@@ -1,17 +1,23 @@
 const { database } = require("../database");
 const bcrypt = require("bcrypt");
+const CryptoJS = require('crypto-js');
+require('dotenv').config()
 
 const checkLogin = async (req, res) => {
-    // /users
-    // {"userName" : "example","password" : "examplepassword"} payload 
   const { userName, password } = req.body;
+const decryptionKey = process.env.NODE_APP_SECRET_KEY
+console.log(password)
+
+  let decryptedPassword = CryptoJS.AES.decrypt(password, decryptionKey).toString(CryptoJS.enc.Utf8);
+  console.log(decryptedPassword)
+
   let userDetails = await database.collection("Users").findOne({ userName });
 
   if (!userDetails) {
     return res.status(404).json({ message: "User details not found" });
   } else {
     const isValidPassword = await bcrypt.compare(
-      password,
+      decryptedPassword,
       userDetails.password
     );
     if (!isValidPassword) {
